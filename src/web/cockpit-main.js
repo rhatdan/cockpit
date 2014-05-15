@@ -124,6 +124,7 @@ function make_dict_key(dict) {
 
 function dbus(address, options, auto_reconnect) {
     var key, handle;
+    var client;
 
     options = $.extend({host: address}, options);
     key = make_dict_key(options);
