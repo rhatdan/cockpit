@@ -53,7 +53,8 @@ PageSetupServer.prototype = {
         $("#dashboard_setup_login_password")[0].placeholder = C_("login-screen", "Enter password");
         $('#dashboard_setup_address').on('keyup change', $.proxy (this, 'update_discovered'));
 
-        self.local_client = cockpit.dbus("localhost");
+        /* TODO: This code needs to be migrated away from dbus-json1 */
+        self.local_client = cockpit.dbus("localhost", { protocol: 'dbus-json1' });
         $(self.local_client).on('objectAdded.setup objectRemoved.setup', function (event, object) {
             if (object.lookup('com.redhat.Cockpit.Machine'))
                 self.update_discovered ();
@@ -170,7 +171,9 @@ PageSetupServer.prototype = {
          */
 
         var self = this;
-        var client = new DBusClient (self.address, self.options);
+
+        /* TODO: This is using the old dbus-json1 protocol */
+        var client = new DBusClient1 (self.address, self.options);
         $(client).on('state-change', function () {
             if (client.state == "closed") {
                 if (!self.options["host_key"] && client.error == "unknown-hostkey") {

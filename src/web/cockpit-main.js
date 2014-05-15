@@ -124,6 +124,7 @@ function make_dict_key(dict) {
 
 function dbus(address, options, auto_reconnect) {
     var key, handle;
+    var client;
 
     options = $.extend({host: address}, options);
     key = make_dict_key(options);
@@ -131,7 +132,13 @@ function dbus(address, options, auto_reconnect) {
 
     if (!handle) {
         dbus_debug("Creating dbus client for %s", key);
-        handle = { refcount: 1, client: new DBusClient(options.host, options) };
+
+        /* TODO: Once dbus-json1 goes away, remove this logic */
+        if (options["protocol"] == "dbus-json1")
+            client = new DBusClient1(options.host, options);
+        else
+            client = new DBusClient(options.host, options);
+        handle = { refcount: 1, client: client };
         dbus_clients[key] = handle;
 
         handle.client.release = function() {

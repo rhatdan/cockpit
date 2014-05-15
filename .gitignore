@@ -80,6 +80,7 @@ depcomp
 /dbus-test.html
 /dbus-test.js
 /dbus.js
+/dbus1.js
 /jquery.min.js
 /qunit.css
 /qunit.js

@@ -17,9 +17,11 @@
  * along with Cockpit; If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* TODO: This is the old dbus-json1 protocol, remove eventually */
+
 /* D-BUS CLIENT
 
-   - client = new DBusClient(address, options)
+   - client = new DBusClient1(address, options)
 
    Creates a new D-Bus client for a service at the given host address
    and options.
@@ -35,7 +37,7 @@
    * "object-paths": An array of object paths to start monitoring in
      the case of a non o.f.DBus.ObjectManager based service.
 
-   A DBusClient has a local data structure that describes (a subset
+   A DBusClient1 has a local data structure that describes (a subset
    of) the objects of the service that it represents, the interfaces
    of those objects, and the properties of those interfaces.  This is
    called the "object tree".
@@ -115,7 +117,6 @@
 var phantom_checkpoint = function () { };
 
 var cockpit = cockpit || { };
-cockpit.debugging = "dbus";
 
 function dbus_debug() {
     if (cockpit.debugging == "all" || cockpit.debugging == "dbus")
@@ -131,17 +132,6 @@ function dbus_warning(str) {
 }
 
 // ----------------------------------------------------------------------------------------------------
-
-function DBusValue(signature, value) {
-    this._init(signature, value);
-}
-
-DBusValue.prototype = {
-    _init: function(type, value) {
-        this.sig = type;
-        this.val = value;
-    }
-};
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -297,11 +287,11 @@ DBusObject.prototype = {
 
 // ----------------------------------------------------------------------------------------------------
 
-function DBusClient(target, options) {
+function DBusClient1(target, options) {
     this._init(target, options);
 }
 
-DBusClient.prototype = {
+DBusClient1.prototype = {
     _init: function(target, options) {
         this.target = target;
         this.options = options;
@@ -320,7 +310,7 @@ DBusClient.prototype = {
     connect: function() {
         var channel_opts = {
             "host" : this.target,
-            "payload" : "dbus-json2"
+            "payload" : "dbus-json1"
         };
         $.extend(channel_opts, this.options);
 
@@ -330,7 +320,7 @@ DBusClient.prototype = {
             channel_opts["object-paths"] == undefined)
             channel_opts["object-manager"] = "/com/redhat/Cockpit";
 
-        dbus_debug("Connecting DBusClient to " + channel_opts["service"] + " on " + this.target);
+        dbus_debug("Connecting DBusClient1 to " + channel_opts["service"] + " on " + this.target);
 
         /* Open a channel */
         var channel = new Channel(channel_opts);
@@ -630,6 +620,6 @@ DBusClient.prototype = {
     },
 
     toString : function() {
-        return "[DBusClient]";
+        return "[DBusClient1]";
     }
 };

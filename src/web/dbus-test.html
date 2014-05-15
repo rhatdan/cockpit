@@ -298,7 +298,7 @@ function basic_tests(client)
     asyncTest("Passing of non-annotated variants", function() {
         var frobber;
 
-        expect(2);
+        expect(1);
 
         frobber = client.lookup("/otree/frobber", "com.redhat.Cockpit.DBusTests.Frobber");
         frobber.call("TestAsv",
@@ -308,10 +308,7 @@ function basic_tests(client)
                       four: 42,
                       five: 1000.0},
                      function (error, reply) {
-                         ok(!error, "Error is not set");
-                         equal(reply,
-                               "{'one': <'foo'>, 'two': <'/bar'>, 'three': <'assgit'>, 'four': <int64 42>, 'five': <int64 1000>}",
-                               "Check HelloWorld() reply");
+                         ok(error, "Error is set");
                          start();
                      });
     });
