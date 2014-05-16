@@ -677,7 +677,7 @@ add_interface (JsonBuilder *builder,
               s = g_strconcat ("dbus_prop_", property_name, NULL);
               json_builder_set_member_name (builder, s);
               g_free (s);
-              builder_json (builder, value);
+              build_json (builder, value);
               g_variant_unref (value);
             }
         }
@@ -700,7 +700,7 @@ add_interface (JsonBuilder *builder,
           s = g_strconcat ("dbus_prop_", property_name, NULL);
           json_builder_set_member_name (builder, property_name);
           g_free (s);
-          builder_json (builder, value);
+          build_json (builder, value);
           g_variant_unref (value);
         }
     }
@@ -907,7 +907,7 @@ on_interface_proxy_signal (GDBusObjectManager *manager,
   g_variant_iter_init (&iter, parameters);
   while ((child = g_variant_iter_next_value (&iter)) != NULL)
     {
-      builder_json (builder, child);
+      build_json (builder, child);
       g_variant_unref (child);
     }
   json_builder_end_array (builder);
@@ -946,7 +946,7 @@ send_dbus_reply (CockpitDBusJson *self, const gchar *cookie, GVariant *result, G
   else
     {
       json_builder_set_member_name (builder, "result");
-      builder_json (builder, result);
+      build_json (builder, result);
     }
   json_builder_end_object (builder);
 
@@ -1000,7 +1000,7 @@ typedef struct
   const gchar *iface_name;
   const gchar *method_name;
   const gchar *objpath;
-  JsonArray *args;
+  JsonNode *params;
 } CallData;
 
 static void
@@ -1231,13 +1231,13 @@ handle_dbus_call (CockpitDBusJson *self,
   call_data->iface_name = json_object_get_string_member (root, "iface");
   call_data->method_name = json_object_get_string_member (root, "method");
   call_data->cookie = json_object_get_string_member (root, "cookie");
-  call_data->args = json_object_get_array_member (root, "args");
+  call_data->params = json_object_get_member (root, "args");
 
   if (!(g_variant_is_object_path (call_data->objpath) &&
         g_dbus_is_interface_name (call_data->iface_name) &&
         g_dbus_is_member_name (call_data->method_name) &&
         call_data->cookie != NULL &&
-        call_data->args != NULL))
+        call_data->params != NULL))
     {
       g_warning ("Invalid data in call message");
       g_free (call_data);
