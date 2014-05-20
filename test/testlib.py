@@ -344,7 +344,11 @@ class MachineCase(unittest.TestCase):
         "Unit cockpit-testing\\.service entered failed state\\.",
 
         # https://bugs.freedesktop.org/show_bug.cgi?id=71092
-        "logind\\.KillUser failed \\(Input/output error\\), trying systemd\\.KillUnit"
+        "logind\\.KillUser failed \\(Input/output error\\), trying systemd\\.KillUnit",
+
+        # SELinux messages to ignore
+        "type=1403 audit.*",
+        "type=1404 audit.*",
     ]
 
     def allow_journal_messages(self, *patterns):
@@ -357,6 +361,7 @@ class MachineCase(unittest.TestCase):
         machine = machine or self.machine
         syslog_ids = [ "cockpitd", "cockpit-ws" ]
         messages = machine.journal_messages(syslog_ids, 5)
+        messages += machine.audit_messages("14") # 14xx is selinux
         all_found = True
         for m in messages:
             found = False
